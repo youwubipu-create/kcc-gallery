@@ -120,7 +120,7 @@ input[type=file]{display:none;}
     <div class="post-wrap">
       <div id="post-toast-wrap" class="toast-wrap" style="display:none;"></div>
       <div class="upload-area" id="up-area" onclick="document.getElementById('f-file').click()">
-        <input type="file" id="f-file" accept="image/*"  onchange="onFile(event)">
+        <input type="file" id="f-file" accept="image/*" onchange="onFile(event)">
         <svg viewBox="0 0 24 24"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg>
         <p>写真を選ぶ / カメラで撮影</p>
       </div>
@@ -348,7 +348,7 @@ function onFile(e){
   const r=new FileReader();
   r.onload=ev=>{
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*"  onchange="onFile(event)"><img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;">タップして変更</p>';
+    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;">タップして変更</p>';
     area.style.minHeight='auto';area.style.border='1px solid #eee';
     area.onclick=()=>document.getElementById('f-file').click();
     startAI();
@@ -384,7 +384,7 @@ async function doPost(){
     document.getElementById('f-name').value='';
     document.getElementById('f-comment').value='';
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*"  onchange="onFile(event)"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;">写真を選ぶ / カメラで撮影</p>';
+    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;">写真を選ぶ / カメラで撮影</p>';
     area.style.minHeight='160px';area.style.border='1.5px dashed #ddd';
     area.onclick=()=>document.getElementById('f-file').click();
     document.getElementById('ai-bar').style.display='none';
