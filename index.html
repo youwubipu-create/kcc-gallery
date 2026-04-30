@@ -338,6 +338,20 @@ input[type=file]{display:none;}
     <input class="f-input" id="f-name" placeholder="例：田中 花子" type="text">
     <div class="f-label">コメント</div>
     <textarea class="f-textarea" id="f-comment" placeholder="写真についてひとこと..."></textarea>
+    <div style="background:#f7f7f7;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1px solid #eee;">
+      <div style="font-size:12px;font-weight:500;color:#555;margin-bottom:8px;">利用規約</div>
+      <div style="font-size:11px;color:#888;line-height:1.7;margin-bottom:10px;">
+        ・投稿した写真はギャラリーへの掲載に同意したものとみなします<br>
+        ・他の人の顔が映っている場合は、必ず本人の許可を得てください<br>
+        ・投稿した写真の無断転載・SNSへの二次利用を禁止します<br>
+        ・規約に違反する投稿は管理者が予告なく削除できます
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:#444;">
+        <input type="checkbox" id="terms-check" onchange="updatePostBtn()"
+          style="width:16px;height:16px;cursor:pointer;accent-color:#111;flex-shrink:0;">
+        上記の利用規約に同意して投稿する
+      </label>
+    </div>
     <button class="post-btn" id="post-btn" disabled onclick="doPost()">投稿する</button>
   </div>
 </div>
@@ -617,11 +631,15 @@ function onFile(e){
   };
   r.readAsDataURL(f);
 }
+function updatePostBtn(){
+  const termsOk=document.getElementById('terms-check')?.checked||false;
+  document.getElementById('post-btn').disabled=!(aiOk&&termsOk);
+}
 function startAI(){
   document.getElementById('ai-bar').style.display='flex';
   setAI('checking','解析中...','確認中');
   setTimeout(()=>{
-    if(Math.random()>0.12){setAI('safe','問題なし — 投稿できます','安全');aiOk=true;document.getElementById('post-btn').disabled=false;}
+    if(Math.random()>0.12){setAI('safe','問題なし — 投稿できます','安全');aiOk=true;updatePostBtn();}
     else{setAI('unsafe','不適切なコンテンツの可能性があります','要確認');}
   },1600);
 }
@@ -647,6 +665,7 @@ async function doPost(){
     area.style.minHeight='160px';area.style.border='1.5px dashed #ddd';
     area.onclick=()=>document.getElementById('f-file').click();
     document.getElementById('ai-bar').style.display='none';
+    const tc=document.getElementById('terms-check');if(tc)tc.checked=false;
     selectedFile=null;aiOk=false;
   }catch(e){showToast('エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='投稿する';}
