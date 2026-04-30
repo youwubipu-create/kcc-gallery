@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v19</title>
+<title>KCC GALLERY - 三田祭2026 v20</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -371,6 +371,7 @@ input[type=file]{display:none;}
       <div class="title-100th">100th</div>
     </div>
     <div class="title-sub">KEIO MITA FES × KCC 100th</div>
+    <div style="font-family:'Modak',cursive;font-size:11px;color:#ccc;letter-spacing:.25em;margin-top:3px;padding-left:2px;">FESTAP</div>
     <button class="admin-secret-btn" onclick="openAdmin()"></button>
   </div>
   <div class="header-controls">
@@ -397,15 +398,26 @@ input[type=file]{display:none;}
   <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMore()">もっと見る</button>
 </div>
 
+<!-- 管理者隠しボタン（右上） -->
+<button onclick="openAdmin()" style="position:fixed;top:52px;right:4px;width:32px;height:32px;background:transparent;border:none;cursor:pointer;opacity:0.12;z-index:200;display:flex;align-items:center;justify-content:center;">
+  <svg viewBox="0 0 6 6" width="6" height="6"><circle cx="3" cy="3" r="3" fill="#111"/></svg>
+</button>
+
+<!-- 列切替ボタン（左下） -->
+<button id="cols-btn" onclick="cycleCols()" style="position:fixed;bottom:48px;left:24px;width:48px;height:48px;border-radius:50%;background:#fff;border:1px solid #ddd;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:400;font-size:11px;font-weight:500;color:#555;font-family:'Noto Sans JP',sans-serif;flex-direction:column;gap:2px;">
+  <svg id="cols-icon" viewBox="0 0 20 14" width="20" height="14" fill="none">
+    <rect x="0" y="0" width="8" height="14" rx="2" fill="#999"/>
+    <rect x="11" y="0" width="8" height="14" rx="2" fill="#999"/>
+  </svg>
+  <span id="cols-label" style="font-size:9px;color:#aaa;">2列</span>
+</button>
+
 <!-- FAB -->
 <button class="fab fab-post" id="fab-main" onclick="openPost()">
   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 </button>
-<button onclick="openAdmin()" style="position:fixed;bottom:36px;left:20px;width:28px;height:28px;background:transparent;border:none;cursor:pointer;opacity:0.15;z-index:200;display:flex;align-items:center;justify-content:center;">
-  <svg viewBox="0 0 6 6" width="6" height="6"><circle cx="3" cy="3" r="3" fill="#111"/></svg>
-</button>
 
-<!-- POST SCREEN -->
+<div class="toast-bar" id="toast-bar"></div>
 <div class="post-screen" id="post-screen">
   <div class="post-header">
     <button class="post-back" onclick="closePost()">
@@ -449,8 +461,10 @@ input[type=file]{display:none;}
   </div>
 </div>
 
-<!-- ADMIN -->
-<div class="admin-screen" id="admin-screen">
+<!-- FAB -->
+<button class="fab fab-post" id="fab-main" onclick="openPost()">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
   <div id="pw-screen-inner">
     <div class="admin-header" style="justify-content:center;">
       <div class="admin-title">管理者ログイン</div>
@@ -492,8 +506,6 @@ input[type=file]{display:none;}
   </div>
 </div>
 
-<div class="toast-bar" id="toast-bar"></div>
-
 <script>
 const SUPABASE_URL='https://rnuzhxjmgriazekhhhin.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudXpoeGptZ3JpYXpla2hoaGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjQ1MjMsImV4cCI6MjA5MzA0MDUyM30.ndca0WKpm6hV6dvoTMxVCmLWzXL9L4njmMrelkolV1I';
@@ -502,7 +514,6 @@ const PAGE_SIZE=20;
 let aiOk=false,adminAuth=false,allPosts=[],adminAllPosts=[],selectedFile=null;
 let currentPage=0,hasMore=false,adminFilter='pending',searchOpen=false;
 let cols=2,expandedCard=null;
-let pinchStartDist=0,pinchStartCols=2;
 
 /* ===== SPLASH ===== */
 (function(){
@@ -527,39 +538,20 @@ let pinchStartDist=0,pinchStartCols=2;
   setTimeout(typeNext,400);
 })();
 
-/* ===== PINCH ===== */
-let pinchActive=false;
-document.addEventListener('touchstart',e=>{
-  if(e.touches.length===2){
-    pinchActive=true;
-    pinchStartDist=Math.hypot(
-      e.touches[0].clientX-e.touches[1].clientX,
-      e.touches[0].clientY-e.touches[1].clientY
-    );
-    pinchStartCols=cols;
-  }
-},{passive:true});
+/* ===== COLS CYCLE ===== */
+const colIcons={
+  2:'<rect x="0" y="0" width="8" height="14" rx="2" fill="#999"/><rect x="11" y="0" width="8" height="14" rx="2" fill="#999"/>',
+  3:'<rect x="0" y="0" width="5" height="14" rx="2" fill="#999"/><rect x="7" y="0" width="5" height="14" rx="2" fill="#999"/><rect x="14" y="0" width="5" height="14" rx="2" fill="#999"/>',
+  4:'<rect x="0" y="0" width="3" height="14" rx="1.5" fill="#999"/><rect x="5" y="0" width="3" height="14" rx="1.5" fill="#999"/><rect x="10" y="0" width="3" height="14" rx="1.5" fill="#999"/><rect x="15" y="0" width="3" height="14" rx="1.5" fill="#999"/>'
+};
 
-document.addEventListener('touchmove',e=>{
-  if(!pinchActive||e.touches.length!==2) return;
-  e.preventDefault();
-  const dist=Math.hypot(
-    e.touches[0].clientX-e.touches[1].clientX,
-    e.touches[0].clientY-e.touches[1].clientY
-  );
-  const ratio=dist/pinchStartDist;
-  let newCols=pinchStartCols;
-  if(ratio<0.88) newCols=Math.min(4,pinchStartCols+1);
-  else if(ratio>1.14) newCols=Math.max(2,pinchStartCols-1);
-  if(newCols!==cols){
-    cols=newCols;
-    pinchStartCols=newCols;
-    pinchStartDist=dist;
-    setCols(cols);
-  }
-},{passive:false});e=>{
-  if(e.touches.length<2) pinchActive=false;
-},{passive:true});
+function cycleCols(){
+  cols=cols>=4?2:cols+1;
+  setCols(cols);
+  const btn=document.getElementById('cols-btn');
+  btn.style.transform='scale(0.85)';
+  setTimeout(()=>btn.style.transform='scale(1)',150);
+}
 
 function setCols(n){
   const grid=document.getElementById('gallery-grid');
@@ -568,6 +560,8 @@ function setCols(n){
   grid.classList.add('changing');
   setTimeout(()=>grid.classList.remove('changing'),260);
   updateColClasses(n);
+  document.getElementById('cols-icon').innerHTML=colIcons[n]||colIcons[2];
+  document.getElementById('cols-label').textContent=n+'列';
 }
 
 function updateColClasses(n){
