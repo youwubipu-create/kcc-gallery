@@ -491,10 +491,8 @@ function doSearch(){
   const q=document.getElementById('search-input').value.trim().toLowerCase();
   const label=document.getElementById('search-label');
   document.getElementById('load-more-btn').style.display='none';
-  if(!q){label.style.display='none';renderCards(allPosts);document.getElementById('load-more-btn').style.display=hasMore?'block':'none';return;}
+  if(!q){renderCards(allPosts);document.getElementById('load-more-btn').style.display=hasMore?'block':'none';return;}
   const results=allPosts.filter(p=>(p.nickname||'').toLowerCase().includes(q)||(p.comment||'').toLowerCase().includes(q));
-  label.style.display='block';
-  label.textContent='"'+q+'" の検索結果：'+results.length+'件';
   renderCards(results);
 }
 
