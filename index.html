@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v18</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>KCC GALLERY - 三田祭2026 v19</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -542,6 +542,7 @@ document.addEventListener('touchstart',e=>{
 
 document.addEventListener('touchmove',e=>{
   if(!pinchActive||e.touches.length!==2) return;
+  e.preventDefault();
   const dist=Math.hypot(
     e.touches[0].clientX-e.touches[1].clientX,
     e.touches[0].clientY-e.touches[1].clientY
@@ -556,9 +557,7 @@ document.addEventListener('touchmove',e=>{
     pinchStartDist=dist;
     setCols(cols);
   }
-},{passive:true});
-
-document.addEventListener('touchend',e=>{
+},{passive:false});e=>{
   if(e.touches.length<2) pinchActive=false;
 },{passive:true});
 
