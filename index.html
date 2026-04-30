@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v21</title>
+<title>KCC GALLERY - 三田祭2026 v22</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -51,7 +51,7 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
   grid-template-columns:repeat(2,1fr);
   gap:6px;
   padding:6px;
-  align-items:start;
+  align-items:start;  /* 上詰め */
 }
 .m-card-outer{cursor:pointer;position:relative;}
 .m-card{
@@ -69,10 +69,10 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .card-name{font-size:13px;font-weight:500;color:#111;}
 .card-comment{font-size:12px;color:#777;margin-top:3px;line-height:1.5;}
 
-/* カード展開時オーバーレイ */
+/* オーバーレイはヘッダーより上 */
 #card-overlay{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0);z-index:40;pointer-events:none;
+  background:rgba(0,0,0,0);z-index:150;pointer-events:none;
   transition:background .3s ease;
 }
 #card-overlay.active{background:rgba(0,0,0,0.25);pointer-events:auto;}
@@ -306,8 +306,7 @@ input[type=file]{display:none;}
     <div id="post-disabled-banner">
       本日の投稿可能時間は終了しました。<br>次の投稿可能時間になるまでお待ちください。
     </div>
-    <div class="upload-area post-item" id="up-area" onclick="document.getElementById('f-file').click()">
-      <input type="file" id="f-file" accept="image/*" onchange="onFile(event)">
+    <div class="upload-area post-item" id="up-area" onclick="triggerFilePicker()">
       <svg viewBox="0 0 24 24"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg>
       <p>写真を選ぶ / カメラで撮影</p>
     </div>
@@ -605,15 +604,21 @@ function openPost(){
   });
 }
 function closePost(){
-  const items=document.querySelectorAll('#post-body .post-item');
+  const items=Array.from(document.querySelectorAll('#post-body .post-item')).reverse();
   items.forEach((el,i)=>{
+    el.style.transition='none';
+    el.style.animationDelay=i*0.06+'s';
     el.classList.remove('anim-in');
-    el.style.animationDelay=(items.length-1-i)*0.06+'s';
     el.classList.add('anim-out');
   });
   setTimeout(()=>{
     document.getElementById('post-screen').classList.remove('open');
-    items.forEach(el=>{el.classList.remove('anim-out');el.style.animationDelay='';el.style.opacity='0';});
+    items.forEach(el=>{
+      el.classList.remove('anim-out');
+      el.style.animationDelay='';
+      el.style.opacity='0';
+      el.style.transition='';
+    });
     const fab=document.getElementById('fab-main');
     fab.className='fab fab-post';
     fab.innerHTML='<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
@@ -738,12 +743,21 @@ function onFile(e){
   const r=new FileReader();
   r.onload=ev=>{
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;font-family:\'Noto Sans JP\',sans-serif;">タップして変更</p>';
+    area.onclick=null;
+    area.innerHTML='<img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;font-family:\'Noto Sans JP\',sans-serif;">タップして変更</p>';
     area.style.minHeight='auto';area.style.border='1px solid #eee';
-    area.onclick=()=>document.getElementById('f-file').click();
+    area.onclick=()=>triggerFilePicker();
     startAI();
   };
   r.readAsDataURL(f);
+}
+
+function triggerFilePicker(){
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='image/*';
+  input.onchange=onFile;
+  input.click();
 }
 function startAI(){
   document.getElementById('ai-bar').style.display='flex';
@@ -771,9 +785,10 @@ async function doPost(){
     document.getElementById('f-name').value='';
     document.getElementById('f-comment').value='';
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;font-family:\'Noto Sans JP\',sans-serif;">写真を選ぶ / カメラで撮影</p>';
+    area.onclick=null;
+    area.innerHTML='<svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;font-family:\'Noto Sans JP\',sans-serif;">写真を選ぶ / カメラで撮影</p>';
     area.style.minHeight='160px';area.style.border='1.5px dashed #ddd';
-    area.onclick=()=>document.getElementById('f-file').click();
+    area.onclick=()=>triggerFilePicker();
     document.getElementById('ai-bar').style.display='none';
     const tc=document.getElementById('terms-check');if(tc)tc.checked=false;
     selectedFile=null;aiOk=false;updatePostBtn();
