@@ -130,7 +130,7 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 
 /* ===== FAB ===== */
 .fab{
-  position:fixed;bottom:36px;right:calc(50% - 232px);
+  position:fixed;bottom:36px;right:20px;
   width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 16px rgba(0,0,0,.18);
@@ -277,8 +277,7 @@ input[type=file]{display:none;}
       <div class="title-100th">100th</div>
     </div>
     <div class="title-sub">KEIO MITA FES × KCC 100th</div>
-    <!-- 100thのhあたりに透明管理者ボタン -->
-    <button class="admin-secret-btn" onclick="openAdmin()" aria-label=""></button>
+
   </div>
   <div class="header-controls">
     <div class="photo-count"><span id="count-num">0</span>枚の写真</div>
@@ -305,6 +304,11 @@ input[type=file]{display:none;}
   <div class="empty" id="gallery-empty" style="display:none;">承認済みの写真がまだありません</div>
   <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMore()">もっと見る</button>
 </div>
+
+<!-- 管理者隠しボタン（左下） -->
+<button onclick="openAdmin()" style="position:fixed;bottom:36px;left:20px;width:28px;height:28px;background:transparent;border:none;cursor:pointer;opacity:0.15;z-index:200;display:flex;align-items:center;justify-content:center;">
+  <svg viewBox="0 0 6 6" width="6" height="6"><circle cx="3" cy="3" r="3" fill="#111"/></svg>
+</button>
 
 <!-- FAB -->
 <button class="fab fab-post" id="fab-main" onclick="openPost()">
