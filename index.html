@@ -146,7 +146,10 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .post-screen{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:480px;height:100%;
-  background:#f7f7f7;z-index:300;display:none;overflow-y:auto;
+  background:rgba(247,247,247,0.82);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  z-index:300;display:none;overflow-y:auto;
 }
 .post-screen.open{display:block;}
 .post-header{
