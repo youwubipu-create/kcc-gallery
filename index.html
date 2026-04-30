@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v23</title>
+<title>KCC GALLERY - 三田祭2026 v24</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -23,7 +23,7 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 #splash-sub.show{opacity:1;}
 
 /* ===== HEADER ===== */
-.header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;}
+.header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:200;}
 .title-area{padding:52px 20px 8px;position:relative;}
 .title-row{display:flex;align-items:flex-start;position:relative;line-height:1;}
 .title-kcc{font-family:'Modak',cursive;font-size:42px;color:#111;letter-spacing:-1px;line-height:1;text-shadow:0 2px 12px rgba(255,255,255,0.9);}
@@ -79,13 +79,16 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .card-name{font-size:13px;font-weight:500;color:#111;}
 .card-comment{font-size:12px;color:#777;margin-top:3px;line-height:1.5;}
 
-/* オーバーレイはヘッダーより上 */
+/* オーバーレイはヘッダーより下、コンテンツより上 */
 #card-overlay{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0);z-index:150;pointer-events:none;
+  background:rgba(0,0,0,0);z-index:90;pointer-events:none;
   transition:background .3s ease;
 }
 #card-overlay.active{background:rgba(0,0,0,0.25);pointer-events:auto;}
+
+/* ヘッダーはoverlay上に常に表示 */
+
 
 /* 列切替アニメーション */
 @keyframes tileIn{
@@ -469,7 +472,10 @@ function expandCard(outer){
 }
 function collapseCard(){
   if(expandedCard){expandedCard.classList.remove('expanded');expandedCard=null;}
-  document.getElementById('card-overlay').classList.remove('active');
+  const overlay=document.getElementById('card-overlay');
+  overlay.classList.remove('active');
+  overlay.style.background='';
+  overlay.style.pointerEvents='none';
 }
 function handleCardTap(outer,e){
   e.stopPropagation();
