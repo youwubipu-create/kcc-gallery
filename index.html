@@ -2,44 +2,173 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>KCC GALLERY - 三田祭2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;}
-.top-bar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #eee;}
-.app-logo{font-size:17px;font-weight:700;color:#111;letter-spacing:.04em;padding-bottom:12px;}
-.app-logo span{color:#aaa;font-weight:400;font-size:12px;margin-left:6px;}
-.top-actions{display:flex;gap:8px;align-items:center;padding-bottom:12px;}
-.top-btn{background:transparent;border:none;cursor:pointer;padding:4px;}
-.top-btn svg{width:22px;height:22px;stroke:#111;fill:none;stroke-width:1.8;}
-.hidden-trigger{background:transparent;border:none;cursor:pointer;padding:6px;opacity:0.15;}
-.hidden-trigger svg{width:5px;height:5px;fill:#999;stroke:none;}
-.search-bar{padding:10px 16px;background:#fff;border-bottom:1px solid #eee;display:none;}
-.search-bar.open{display:flex;align-items:center;gap:8px;}
-.search-input{flex:1;background:#f5f5f5;border:none;border-radius:10px;padding:9px 14px;font-size:16px;color:#111;outline:none;}
-.search-input::placeholder{color:#bbb;}
-.search-cancel{font-size:13px;color:#888;background:transparent;border:none;cursor:pointer;white-space:nowrap;}
-.tabs{display:flex;padding:0 16px;gap:24px;border-bottom:1px solid #eee;background:#fff;}
-.tab{font-size:13px;color:#aaa;padding:12px 0;cursor:pointer;border-bottom:2px solid transparent;font-weight:500;}
-.tab.active{color:#111;border-bottom-color:#111;}
-.section{display:none;}
-.section.active{display:block;}
-.masonry-wrap{padding:10px;columns:2;gap:8px;}
-.m-card{break-inside:avoid;margin-bottom:8px;overflow:hidden;border-radius:14px;cursor:pointer;background:#fff;border:1px solid #f0f0f0;}
+:root{--gold:#C9922A;--black:#111;--white:#fff;--border:#efefef;--text-sub:#999;}
+body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+
+/* ===== FIXED HEADER ===== */
+.header{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;z-index:100;
+}
+.title-area{
+  padding:52px 20px 8px;
+  position:relative;
+}
+.title-row{
+  display:flex;align-items:flex-start;
+  position:relative;line-height:1;
+}
+.title-kcc{
+  font-family:'Modak',cursive;font-size:42px;color:#111;
+  letter-spacing:-1px;line-height:1;position:relative;z-index:2;
+  text-shadow:0 2px 12px rgba(255,255,255,0.8);
+}
+.title-100th{
+  font-family:'Dancing Script',cursive;font-size:38px;
+  color:var(--gold);opacity:0.72;
+  position:absolute;right:16px;top:-8px;z-index:3;
+  transform:rotate(-3deg);
+  text-shadow:0 2px 8px rgba(255,255,255,0.6);
+}
+.title-sub{
+  font-family:'Caveat',cursive;font-size:15px;color:#444;
+  letter-spacing:.12em;margin-top:4px;padding-left:2px;
+  text-shadow:0 1px 6px rgba(255,255,255,0.9);
+}
+
+/* 管理者への透明ボタン（100thのhあたり） */
+.admin-secret-btn{
+  position:absolute;right:16px;top:-8px;
+  width:28px;height:44px;
+  background:transparent;border:none;cursor:pointer;z-index:10;
+}
+
+/* ===== HEADER CONTROLS ===== */
+.header-controls{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 16px 10px;
+}
+.photo-count{
+  font-size:11px;color:#555;letter-spacing:.08em;
+  text-shadow:0 1px 4px rgba(255,255,255,0.8);
+}
+.photo-count span{font-size:16px;font-weight:500;color:#111;margin-right:2px;}
+
+/* 検索エリア：バー付きで伸びる */
+.search-area{
+  display:flex;align-items:center;
+}
+.search-pill{
+  display:flex;align-items:center;gap:0;
+  background:rgba(255,255,255,0.92);
+  border:1px solid #e0e0e0;
+  border-radius:20px;
+  padding:6px 12px;
+  backdrop-filter:blur(8px);
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+  min-width:36px;
+  overflow:hidden;
+  cursor:pointer;
+}
+.search-pill.expanded{
+  min-width:220px;
+  cursor:default;
+  padding:6px 14px;
+}
+.search-pill-icon{
+  flex-shrink:0;display:flex;align-items:center;
+}
+.search-pill-icon svg{width:16px;height:16px;stroke:#555;fill:none;stroke-width:2;}
+.search-pill-input{
+  width:0;border:none;outline:none;
+  font-size:13px;color:#111;background:transparent;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:width .35s cubic-bezier(.4,0,.2,1);
+  padding:0;
+}
+.search-pill.expanded .search-pill-input{
+  width:150px;padding-left:8px;
+}
+.search-pill-input::placeholder{color:#bbb;}
+.search-cancel{
+  font-size:12px;color:#999;background:transparent;border:none;
+  cursor:pointer;white-space:nowrap;padding-left:8px;
+  opacity:0;width:0;overflow:hidden;transition:opacity .25s,width .35s;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.search-pill.expanded ~ .search-cancel{opacity:1;width:auto;}
+
+/* ===== CONTENT（写真がタイトルの下に流れる） ===== */
+.content{
+  padding-top:140px;
+  padding-bottom:100px;
+}
+.search-result-label{font-size:11px;color:var(--text-sub);padding:8px 16px 4px;letter-spacing:.05em;}
+.masonry-wrap{padding:6px 10px;columns:2;gap:8px;}
+.m-card{
+  break-inside:avoid;margin-bottom:8px;overflow:hidden;
+  border-radius:16px;background:#fff;border:1px solid var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
 .m-card img{width:100%;display:block;object-fit:cover;}
-.m-card .card-info{padding:8px 10px 10px;}
-.m-card .ov-name{font-size:12px;font-weight:600;color:#111;}
-.m-card .ov-comment{font-size:11px;color:#888;margin-top:2px;line-height:1.4;}
-.search-result-label{font-size:12px;color:#aaa;padding:12px 16px 4px;}
+.card-info{padding:8px 10px 10px;}
+.card-name{font-size:12px;font-weight:500;color:#111;}
+.card-comment{font-size:11px;color:#999;margin-top:2px;line-height:1.4;}
 .empty{text-align:center;padding:60px 20px;color:#ccc;font-size:13px;}
-.loading{text-align:center;padding:40px 20px;color:#bbb;font-size:13px;}
-.load-more-btn{display:block;width:calc(100% - 20px);margin:0 10px 16px;padding:12px;background:#fff;border:1px solid #eee;border-radius:12px;font-size:13px;color:#888;cursor:pointer;text-align:center;}
-.post-wrap{padding:16px;}
-.upload-area{border-radius:16px;overflow:hidden;background:#fff;margin-bottom:14px;cursor:pointer;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #ddd;}
+.loading{text-align:center;padding:60px 20px;color:#ddd;font-size:13px;}
+.load-more-btn{
+  display:block;width:calc(100% - 32px);margin:4px 16px 20px;
+  padding:12px;background:#fff;border:1px solid var(--border);
+  border-radius:14px;font-size:13px;color:#888;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+}
+
+/* ===== FAB ===== */
+.fab{
+  position:fixed;bottom:36px;right:calc(50% - 232px);
+  width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  transition:transform .2s ease,background .2s ease;z-index:200;
+}
+.fab:active{transform:scale(.92);}
+.fab-post{background:#111;}
+.fab-post svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;}
+.fab-gallery{background:#fff;}
+.fab-gallery svg{width:22px;height:22px;stroke:#111;fill:none;stroke-width:2;}
+
+/* ===== POST SCREEN ===== */
+.post-screen{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;height:100%;
+  background:#f7f7f7;z-index:300;display:none;overflow-y:auto;
+}
+.post-screen.open{display:block;}
+.post-header{
+  display:flex;align-items:center;
+  padding:56px 16px 16px;background:#fff;
+  border-bottom:1px solid var(--border);gap:12px;
+}
+.post-back{background:transparent;border:none;cursor:pointer;padding:4px;}
+.post-back svg{width:22px;height:22px;stroke:#111;fill:none;stroke-width:2;}
+.post-title{font-size:16px;font-weight:500;color:#111;}
+.post-body{padding:16px;}
+.upload-area{
+  border-radius:16px;overflow:hidden;background:#fff;margin-bottom:14px;
+  cursor:pointer;min-height:160px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;border:1.5px dashed #ddd;
+}
 .upload-area svg{width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5;}
-.upload-area p{font-size:13px;color:#bbb;}
-.ai-bar{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 14px;margin-bottom:14px;border:1px solid #eee;}
+.upload-area p{font-size:13px;color:#bbb;font-family:'Noto Sans JP',sans-serif;}
+.ai-bar{
+  display:flex;align-items:center;gap:10px;background:#fff;
+  border-radius:12px;padding:10px 14px;margin-bottom:14px;border:1px solid var(--border);
+}
 .ai-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .ai-dot.safe{background:#1D9E75;}
 .ai-dot.checking{background:#EF9F27;}
@@ -52,154 +181,217 @@ body{background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Hiragino S
 .ai-tag.checking{background:#fff8e6;color:#854F0B;}
 .ai-tag.unsafe{background:#fef0f0;color:#993C1D;}
 .f-label{font-size:11px;color:#aaa;margin-bottom:6px;letter-spacing:.05em;}
-.f-input{width:100%;background:#fff;border:1px solid #eee;border-radius:12px;padding:12px 14px;font-size:16px;color:#111;outline:none;margin-bottom:10px;}
-.f-textarea{width:100%;background:#fff;border:1px solid #eee;border-radius:12px;padding:12px 14px;font-size:16px;color:#111;outline:none;margin-bottom:14px;resize:none;height:80px;}
-.post-btn{width:100%;background:#111;color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.f-input{
+  width:100%;background:#fff;border:1px solid #eee;border-radius:12px;
+  padding:12px 14px;font-size:16px;color:#111;outline:none;margin-bottom:10px;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.f-textarea{
+  width:100%;background:#fff;border:1px solid #eee;border-radius:12px;
+  padding:12px 14px;font-size:16px;color:#111;outline:none;
+  margin-bottom:14px;resize:none;height:80px;font-family:'Noto Sans JP',sans-serif;
+}
+.post-btn{
+  width:100%;background:#111;color:#fff;border:none;
+  border-radius:14px;padding:14px;font-size:15px;font-weight:500;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+}
 .post-btn:disabled{background:#e0e0e0;color:#aaa;cursor:not-allowed;}
-.pw-overlay{min-height:400px;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#f7f7f7;}
-.pw-box{width:100%;background:#fff;border-radius:20px;padding:28px 24px;border:1px solid #eee;}
-.pw-title{font-size:16px;font-weight:700;color:#111;text-align:center;margin-bottom:4px;}
-.pw-sub{font-size:12px;color:#bbb;text-align:center;margin-bottom:24px;}
-.pw-input{width:100%;background:#f7f7f7;border:1px solid #eee;border-radius:12px;padding:14px;font-size:16px;color:#111;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:12px;}
-.pw-input::placeholder{letter-spacing:normal;color:#ccc;}
-.pw-btn{width:100%;background:#111;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
-.pw-error{font-size:12px;color:#E24B4A;text-align:center;margin-top:8px;min-height:18px;}
-.admin-wrap{padding:12px 16px;}
-.admin-search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eee;border-radius:12px;padding:8px 12px;margin-bottom:12px;}
-.admin-search svg{width:16px;height:16px;stroke:#ccc;fill:none;stroke-width:2;flex-shrink:0;}
-.admin-search input{flex:1;border:none;outline:none;font-size:13px;color:#111;background:transparent;}
-.admin-search input::placeholder{color:#bbb;}
-.admin-filter{display:flex;gap:8px;margin-bottom:14px;}
-.filter-btn{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #eee;background:#fff;color:#888;}
-.filter-btn.active{background:#111;color:#fff;border-color:#111;}
-.a-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid #f0f0f0;}
+
+/* ===== ADMIN SCREEN ===== */
+.admin-screen{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;height:100%;
+  background:#f7f7f7;z-index:300;display:none;overflow-y:auto;
+}
+.admin-screen.open{display:block;}
+.admin-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:56px 16px 12px;background:#fff;border-bottom:1px solid var(--border);
+}
+.admin-title{font-size:16px;font-weight:500;color:#111;}
+.logout-btn{font-size:12px;color:#999;background:transparent;border:none;cursor:pointer;}
+.admin-body{padding:12px 16px;}
+.admin-search-wrap{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:8px 12px;margin-bottom:10px;
+}
+.admin-search-wrap svg{width:15px;height:15px;stroke:#ccc;fill:none;stroke-width:2;flex-shrink:0;}
+.admin-search-wrap input{
+  flex:1;border:none;outline:none;font-size:13px;color:#111;
+  background:transparent;font-family:'Noto Sans JP',sans-serif;
+}
+.admin-search-wrap input::placeholder{color:#ccc;}
+.filter-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.filter-tab{
+  flex:1;padding:8px 4px;border-radius:10px;font-size:12px;font-weight:500;
+  cursor:pointer;border:1px solid var(--border);background:#fff;color:#999;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.filter-tab.active{background:#111;color:#fff;border-color:#111;}
+.a-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid var(--border);}
 .a-card img{width:100%;height:200px;object-fit:cover;}
 .a-body{padding:12px 14px;}
-.a-name{font-size:14px;font-weight:600;color:#111;}
-.a-comment{font-size:12px;color:#888;margin-top:4px;line-height:1.5;}
-.a-status{display:inline-block;font-size:10px;padding:3px 10px;border-radius:20px;margin-top:8px;font-weight:600;}
+.a-name{font-size:14px;font-weight:500;color:#111;}
+.a-comment{font-size:12px;color:#888;margin-top:3px;line-height:1.5;}
+.a-status{display:inline-block;font-size:10px;padding:3px 10px;border-radius:20px;margin-top:8px;font-weight:500;}
 .a-status.pending{background:#fff8e6;color:#854F0B;}
 .a-status.approved{background:#e6f7f0;color:#085041;}
 .a-actions{display:flex;gap:8px;margin-top:12px;}
-.btn-ok{flex:1;background:#111;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;}
-.btn-del{flex:1;background:#fef0f0;color:#993C1D;border:1px solid #f09595;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;}
-.admin-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px;}
-.admin-header-title{font-size:13px;color:#aaa;}
-.logout-btn{font-size:11px;color:#ccc;background:transparent;border:none;cursor:pointer;}
-.toast-wrap{padding:0 16px;margin-bottom:8px;}
-.toast{background:#fff;border:1px solid #eee;border-radius:12px;padding:10px 14px;font-size:12px;color:#555;display:flex;align-items:center;gap:8px;}
-.t-dot{width:6px;height:6px;border-radius:50%;}
+.btn-ok{flex:1;background:#111;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btn-del{flex:1;background:#fef0f0;color:#993C1D;border:1px solid #f09595;border-radius:10px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.pw-overlay{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px 24px;}
+.pw-box{width:100%;background:#fff;border-radius:20px;padding:28px 24px;border:1px solid var(--border);}
+.pw-title{font-size:16px;font-weight:500;color:#111;text-align:center;margin-bottom:4px;}
+.pw-sub{font-size:12px;color:#bbb;text-align:center;margin-bottom:24px;}
+.pw-input{
+  width:100%;background:#f7f7f7;border:1px solid #eee;border-radius:12px;
+  padding:14px;font-size:16px;color:#111;outline:none;
+  text-align:center;letter-spacing:.1em;margin-bottom:12px;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.pw-input::placeholder{letter-spacing:normal;color:#ccc;}
+.pw-btn{width:100%;background:#111;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.pw-error{font-size:12px;color:#E24B4A;text-align:center;margin-top:8px;min-height:18px;}
+
+/* ===== TOAST ===== */
+.toast-bar{
+  position:fixed;bottom:110px;left:50%;transform:translateX(-50%);
+  background:#111;color:#fff;font-size:12px;
+  padding:10px 20px;border-radius:20px;white-space:nowrap;
+  z-index:400;opacity:0;transition:opacity .3s;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.toast-bar.show{opacity:1;}
 input[type=file]{display:none;}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;justify-content:space-around;padding:12px 0 28px;border-top:1px solid #eee;background:#fff;}
-.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:transparent;border:none;cursor:pointer;padding:4px 16px;}
-.bnav-btn svg{width:22px;height:22px;stroke:#ccc;fill:none;stroke-width:1.8;}
-.bnav-btn.active svg{stroke:#111;}
-.bnav-btn span{font-size:10px;color:#ccc;}
-.bnav-btn.active span{color:#111;}
-.content{padding-bottom:80px;}
 </style>
 </head>
 <body>
-<div class="top-bar">
-  <div class="app-logo">KCC GALLERY <span>三田祭2026</span></div>
-  <div class="top-actions">
-    <button class="top-btn" onclick="toggleSearch()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-    <button class="hidden-trigger" onclick="openAdmin()"><svg viewBox="0 0 5 5" width="5" height="5"><circle cx="2.5" cy="2.5" r="2.5"/></svg></button>
+
+<!-- FIXED HEADER（写真の上に重なって固定） -->
+<div class="header">
+  <div class="title-area">
+    <div class="title-row">
+      <div class="title-kcc">KCC GALLERY</div>
+      <div class="title-100th">100th</div>
+    </div>
+    <div class="title-sub">KEIO MITA FES × KCC 100th</div>
+    <!-- 100thのhあたりに透明管理者ボタン -->
+    <button class="admin-secret-btn" onclick="openAdmin()" aria-label=""></button>
   </div>
-</div>
-<div class="search-bar" id="search-bar">
-  <input class="search-input" id="search-input" placeholder="名前・コメントで検索..." oninput="doSearch()">
-  <button class="search-cancel" onclick="closeSearch()">キャンセル</button>
-</div>
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('gallery',this)">すべて</div>
-  <div class="tab" onclick="switchTab('post',this)">投稿する</div>
-</div>
-<div class="content">
-  <div id="sec-gallery" class="section active">
-    <div id="search-label" class="search-result-label" style="display:none;"></div>
-    <div id="gallery-loading" class="loading">読み込み中...</div>
-    <div class="masonry-wrap" id="gallery-grid" style="display:none;"></div>
-    <div class="empty" id="gallery-empty" style="display:none;">承認済みの写真がまだありません</div>
-    <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMore()">もっと見る</button>
-  </div>
-  <div id="sec-post" class="section">
-    <div class="post-wrap">
-      <div id="post-toast-wrap" class="toast-wrap" style="display:none;"></div>
-      <div class="upload-area" id="up-area" onclick="document.getElementById('f-file').click()">
-        <input type="file" id="f-file" accept="image/*" onchange="onFile(event)">
-        <svg viewBox="0 0 24 24"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg>
-        <p>写真を選ぶ / カメラで撮影</p>
+  <div class="header-controls">
+    <div class="photo-count"><span id="count-num">0</span>枚の写真</div>
+    <div class="search-area">
+      <div class="search-pill" id="search-pill" onclick="handlePillClick()">
+        <div class="search-pill-icon">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <input class="search-pill-input" id="search-input" type="text"
+          placeholder="名前・コメントで検索..."
+          oninput="doSearch()"
+          onclick="event.stopPropagation()">
       </div>
-      <div id="ai-bar" style="display:none;" class="ai-bar">
-        <div class="ai-dot checking" id="ai-dot"></div>
-        <div class="ai-info"><p>AI安全チェック</p><span id="ai-msg">解析中...</span></div>
-        <span class="ai-tag checking" id="ai-tag">確認中</span>
-      </div>
-      <div class="f-label">ニックネーム</div>
-      <input class="f-input" id="f-name" placeholder="例：田中 花子" type="text">
-      <div class="f-label">コメント</div>
-      <textarea class="f-textarea" id="f-comment" placeholder="写真についてひとこと..."></textarea>
-      <button class="post-btn" id="post-btn" disabled onclick="doPost()">投稿する</button>
+      <button class="search-cancel" id="search-cancel" onclick="closeSearch()">キャンセル</button>
     </div>
   </div>
-  <div id="sec-admin" class="section">
-    <div id="pw-screen" class="pw-overlay">
+</div>
+
+<!-- GALLERY CONTENT -->
+<div class="content" id="main-content">
+  <div id="search-label" class="search-result-label" style="display:none;"></div>
+  <div id="gallery-loading" class="loading">読み込み中...</div>
+  <div class="masonry-wrap" id="gallery-grid" style="display:none;"></div>
+  <div class="empty" id="gallery-empty" style="display:none;">承認済みの写真がまだありません</div>
+  <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMore()">もっと見る</button>
+</div>
+
+<!-- FAB -->
+<button class="fab fab-post" id="fab-main" onclick="openPost()">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- POST SCREEN -->
+<div class="post-screen" id="post-screen">
+  <div class="post-header">
+    <button class="post-back" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+    </button>
+    <div class="post-title">写真を投稿する</div>
+  </div>
+  <div class="post-body">
+    <div class="upload-area" id="up-area" onclick="document.getElementById('f-file').click()">
+      <input type="file" id="f-file" accept="image/*" onchange="onFile(event)">
+      <svg viewBox="0 0 24 24"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg>
+      <p>写真を選ぶ / カメラで撮影</p>
+    </div>
+    <div id="ai-bar" style="display:none;" class="ai-bar">
+      <div class="ai-dot checking" id="ai-dot"></div>
+      <div class="ai-info"><p>AI安全チェック</p><span id="ai-msg">解析中...</span></div>
+      <span class="ai-tag checking" id="ai-tag">確認中</span>
+    </div>
+    <div class="f-label">ニックネーム</div>
+    <input class="f-input" id="f-name" placeholder="例：田中 花子" type="text">
+    <div class="f-label">コメント</div>
+    <textarea class="f-textarea" id="f-comment" placeholder="写真についてひとこと..."></textarea>
+    <button class="post-btn" id="post-btn" disabled onclick="doPost()">投稿する</button>
+  </div>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div class="admin-screen" id="admin-screen">
+  <div id="pw-screen-inner">
+    <div class="admin-header" style="justify-content:center;">
+      <div class="admin-title">管理者ログイン</div>
+    </div>
+    <div class="pw-overlay">
       <div class="pw-box">
         <div class="pw-title">管理者認証</div>
         <div class="pw-sub">パスワードを入力してください</div>
-        <input class="pw-input" id="pw-input" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+        <input class="pw-input" id="pw-input" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')checkPw()">
         <button class="pw-btn" onclick="checkPw()">ログイン</button>
         <div class="pw-error" id="pw-error"></div>
-      </div>
-    </div>
-    <div id="admin-screen" style="display:none;">
-      <div class="admin-header">
-        <span class="admin-header-title">投稿管理</span>
-        <button class="logout-btn" onclick="logout()">ログアウト</button>
-      </div>
-      <div class="admin-wrap">
-        <div class="admin-search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="admin-search-input" placeholder="名前・コメントで検索..." oninput="adminSearch()">
+        <div style="margin-top:14px;text-align:center;">
+          <button onclick="closeAdmin()" style="font-size:12px;color:#bbb;background:transparent;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">キャンセル</button>
         </div>
-        <div class="admin-filter">
-          <button class="filter-btn active" id="filter-pending" onclick="setFilter('pending')">審査待ち</button>
-          <button class="filter-btn" id="filter-approved" onclick="setFilter('approved')">承認済み</button>
-          <button class="filter-btn" id="filter-all" onclick="setFilter('all')">すべて</button>
-        </div>
-        <div id="admin-toast-wrap" class="toast-wrap" style="display:none;"></div>
-        <div id="admin-list"></div>
-        <div id="admin-empty" class="empty" style="display:none;">投稿がありません</div>
       </div>
     </div>
   </div>
+  <div id="admin-panel" style="display:none;">
+    <div class="admin-header">
+      <div class="admin-title">投稿管理</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button onclick="closeAdmin()" style="font-size:12px;color:#bbb;background:transparent;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">閉じる</button>
+        <button class="logout-btn" onclick="adminLogout()">ログアウト</button>
+      </div>
+    </div>
+    <div class="admin-body">
+      <div class="admin-search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="admin-search" placeholder="名前・コメントで検索..." oninput="adminSearch()">
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" id="ft-pending" onclick="setFilter('pending')">審査待ち</button>
+        <button class="filter-tab" id="ft-approved" onclick="setFilter('approved')">承認済み</button>
+        <button class="filter-tab" id="ft-all" onclick="setFilter('all')">すべて</button>
+      </div>
+      <div id="admin-list"></div>
+      <div id="admin-empty" class="empty" style="display:none;">投稿がありません</div>
+    </div>
+  </div>
 </div>
-<div class="bottom-nav">
-  <button class="bnav-btn active" id="bnav-gallery" onclick="switchTab('gallery',null,0)">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span>ギャラリー</span>
-  </button>
-  <button class="bnav-btn" id="bnav-post" onclick="switchTab('post',null,1)">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    <span>投稿</span>
-  </button>
-</div>
+
+<div class="toast-bar" id="toast-bar"></div>
+
 <script>
 const SUPABASE_URL='https://rnuzhxjmgriazekhhhin.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudXpoeGptZ3JpYXpla2hoaGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjQ1MjMsImV4cCI6MjA5MzA0MDUyM30.ndca0WKpm6hV6dvoTMxVCmLWzXL9L4njmMrelkolV1I';
-const PASS='KCC';
+const PASS='tO6%yyaOUp6q';
 const PAGE_SIZE=20;
-let aiOk=false,adminAuth=false,allPosts=[],adminAllPosts=[],selectedFile=null,currentPage=0,hasMore=false,adminFilter='pending';
+let aiOk=false,adminAuth=false,allPosts=[],adminAllPosts=[],selectedFile=null,currentPage=0,hasMore=false,adminFilter='pending',searchOpen=false;
 
 async function api(path,opts={}){
-  const headers={
-    'apikey':SUPABASE_KEY,
-    'Authorization':'Bearer '+SUPABASE_KEY,
-    'Content-Type':'application/json',
-    'Prefer':'return=representation',
-    ...(opts.headers||{})
-  };
+  const headers={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})};
   const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...opts,headers});
   if(!res.ok){const e=await res.text();throw new Error(e);}
   const ct=res.headers.get('content-type')||'';
@@ -234,6 +426,8 @@ async function loadGallery(reset=true){
     if(reset){allPosts=newPosts;}else{allPosts=[...allPosts,...newPosts];}
     renderCards(allPosts);
     document.getElementById('load-more-btn').style.display=hasMore?'block':'none';
+    const countData=await api('posts?approved=eq.true&select=id');
+    document.getElementById('count-num').textContent=(countData||[]).length;
   }catch(e){
     document.getElementById('gallery-loading').style.display='none';
     document.getElementById('gallery-empty').style.display='block';
@@ -254,40 +448,41 @@ function renderCards(list){
   const grid=document.getElementById('gallery-grid');
   const empty=document.getElementById('gallery-empty');
   if(!list.length){grid.style.display='none';empty.style.display='block';empty.textContent='承認済みの写真がまだありません';return;}
-  empty.style.display='none';
-  grid.style.display='block';
+  empty.style.display='none';grid.style.display='block';
   grid.innerHTML=list.map(p=>`
     <div class="m-card">
       <img src="${p.image_url}" loading="lazy">
       <div class="card-info">
-        <div class="ov-name">${p.nickname||'匿名'}</div>
-        ${p.comment?'<div class="ov-comment">'+p.comment+'</div>':''}
+        <div class="card-name">${p.nickname||'匿名'}</div>
+        ${p.comment?'<div class="card-comment">'+p.comment+'</div>':''}
       </div>
     </div>
   `).join('');
 }
 
-function switchTab(name,el,idx){
-  ['gallery','post','admin'].forEach(t=>document.getElementById('sec-'+t).classList.toggle('active',t===name));
-  if(el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
-  ['bnav-gallery','bnav-post'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===(idx!==undefined?idx:['gallery','post'].indexOf(name))));
-  if(name==='gallery') loadGallery();
+/* 検索 */
+function handlePillClick(){
+  if(!searchOpen) openSearch();
 }
-
-function toggleSearch(){
-  const bar=document.getElementById('search-bar');
-  if(bar.classList.contains('open')){closeSearch();}
-  else{bar.classList.add('open');switchTab('gallery',null,0);setTimeout(()=>document.getElementById('search-input').focus(),100);}
+function openSearch(){
+  searchOpen=true;
+  const pill=document.getElementById('search-pill');
+  const cancel=document.getElementById('search-cancel');
+  pill.classList.add('expanded');
+  cancel.style.opacity='1';cancel.style.width='auto';
+  setTimeout(()=>document.getElementById('search-input').focus(),350);
 }
-
 function closeSearch(){
-  document.getElementById('search-bar').classList.remove('open');
+  searchOpen=false;
+  const pill=document.getElementById('search-pill');
+  const cancel=document.getElementById('search-cancel');
+  pill.classList.remove('expanded');
+  cancel.style.opacity='0';cancel.style.width='0';
   document.getElementById('search-input').value='';
   document.getElementById('search-label').style.display='none';
   renderCards(allPosts);
   document.getElementById('load-more-btn').style.display=hasMore?'block':'none';
 }
-
 function doSearch(){
   const q=document.getElementById('search-input').value.trim().toLowerCase();
   const label=document.getElementById('search-label');
@@ -299,28 +494,43 @@ function doSearch(){
   renderCards(results);
 }
 
+/* POST */
+function openPost(){
+  document.getElementById('post-screen').classList.add('open');
+  const fab=document.getElementById('fab-main');
+  fab.className='fab fab-gallery';
+  fab.innerHTML='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+  fab.onclick=closePost;
+}
+function closePost(){
+  document.getElementById('post-screen').classList.remove('open');
+  const fab=document.getElementById('fab-main');
+  fab.className='fab fab-post';
+  fab.innerHTML='<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  fab.onclick=openPost;
+}
+
+/* ADMIN */
 function openAdmin(){
-  ['gallery','post','admin'].forEach(t=>document.getElementById('sec-'+t).classList.toggle('active',t==='admin'));
-  ['bnav-gallery','bnav-post'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('admin-screen').classList.add('open');
   if(!adminAuth){
-    document.getElementById('pw-screen').style.display='flex';
-    document.getElementById('admin-screen').style.display='none';
+    document.getElementById('pw-screen-inner').style.display='block';
+    document.getElementById('admin-panel').style.display='none';
     document.getElementById('pw-input').value='';
     document.getElementById('pw-error').textContent='';
     setTimeout(()=>document.getElementById('pw-input').focus(),100);
   }else{
-    document.getElementById('pw-screen').style.display='none';
-    document.getElementById('admin-screen').style.display='block';
+    document.getElementById('pw-screen-inner').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
     loadAdmin();
   }
 }
-
+function closeAdmin(){document.getElementById('admin-screen').classList.remove('open');}
 function checkPw(){
   if(document.getElementById('pw-input').value===PASS){
     adminAuth=true;
-    document.getElementById('pw-screen').style.display='none';
-    document.getElementById('admin-screen').style.display='block';
+    document.getElementById('pw-screen-inner').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
     loadAdmin();
   }else{
     document.getElementById('pw-error').textContent='パスワードが違います';
@@ -328,49 +538,36 @@ function checkPw(){
     setTimeout(()=>document.getElementById('pw-error').textContent='',2000);
   }
 }
-
-function logout(){adminAuth=false;switchTab('gallery',null,0);}
+function adminLogout(){adminAuth=false;closeAdmin();}
 
 function setFilter(f){
   adminFilter=f;
-  ['pending','approved','all'].forEach(id=>{
-    document.getElementById('filter-'+id).classList.toggle('active',id===f);
-  });
-  document.getElementById('admin-search-input').value='';
+  ['pending','approved','all'].forEach(id=>document.getElementById('ft-'+id).classList.toggle('active',id===f));
+  document.getElementById('admin-search').value='';
   loadAdmin();
 }
-
 function adminSearch(){
-  const q=document.getElementById('admin-search-input').value.trim().toLowerCase();
+  const q=document.getElementById('admin-search').value.trim().toLowerCase();
   if(!q){renderAdminCards(adminAllPosts);return;}
-  const results=adminAllPosts.filter(p=>
-    (p.nickname||'').toLowerCase().includes(q)||
-    (p.comment||'').toLowerCase().includes(q)
-  );
-  renderAdminCards(results);
+  renderAdminCards(adminAllPosts.filter(p=>(p.nickname||'').toLowerCase().includes(q)||(p.comment||'').toLowerCase().includes(q)));
 }
-
 async function loadAdmin(){
-  const list=document.getElementById('admin-list');
-  const empty=document.getElementById('admin-empty');
-  list.innerHTML='<div class="loading">読み込み中...</div>';
-  empty.style.display='none';
+  document.getElementById('admin-list').innerHTML='<div class="loading">読み込み中...</div>';
+  document.getElementById('admin-empty').style.display='none';
   try{
-    let query='posts?order=created_at.desc&select=*';
-    if(adminFilter==='pending') query='posts?approved=eq.false&order=created_at.desc&select=*';
-    if(adminFilter==='approved') query='posts?approved=eq.true&order=created_at.desc&select=*';
-    const data=await api(query);
-    adminAllPosts=data||[];
+    let q='posts?order=created_at.desc&select=*';
+    if(adminFilter==='pending') q='posts?approved=eq.false&order=created_at.desc&select=*';
+    if(adminFilter==='approved') q='posts?approved=eq.true&order=created_at.desc&select=*';
+    adminAllPosts=await api(q)||[];
     renderAdminCards(adminAllPosts);
-  }catch(e){list.innerHTML='<div class="empty">エラー: '+e.message+'</div>';}
+  }catch(e){document.getElementById('admin-list').innerHTML='<div class="empty">エラー: '+e.message+'</div>';}
 }
-
 function renderAdminCards(list){
-  const listEl=document.getElementById('admin-list');
+  const el=document.getElementById('admin-list');
   const empty=document.getElementById('admin-empty');
-  if(!list.length){listEl.innerHTML='';empty.style.display='block';return;}
+  if(!list.length){el.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  listEl.innerHTML=list.map(p=>`
+  el.innerHTML=list.map(p=>`
     <div class="a-card" id="ac-${p.id}">
       <img src="${p.image_url}">
       <div class="a-body">
@@ -385,42 +582,39 @@ function renderAdminCards(list){
     </div>
   `).join('');
 }
-
 async function approve(id){
   try{
     await api('posts?id=eq.'+id,{method:'PATCH',body:JSON.stringify({approved:true,approved_at:new Date().toISOString()})});
-    showToast('admin','green','承認して公開しました！');
-    loadAdmin();
-  }catch(e){showToast('admin','red','エラー: '+e.message);}
+    showToast('✓ 承認して公開しました');loadAdmin();loadGallery();
+  }catch(e){showToast('エラー: '+e.message);}
 }
-
 async function deletePost(id){
   if(!confirm('この投稿を削除しますか？')) return;
   try{
     await api('posts?id=eq.'+id,{method:'DELETE'});
     adminAllPosts=adminAllPosts.filter(p=>p.id!==id);
     document.getElementById('ac-'+id)?.remove();
-    showToast('admin','red','削除しました。');
+    showToast('削除しました');
     if(!document.getElementById('admin-list').querySelectorAll('.a-card').length)
       document.getElementById('admin-empty').style.display='block';
-  }catch(e){showToast('admin','red','エラー: '+e.message);}
+    loadGallery();
+  }catch(e){showToast('エラー: '+e.message);}
 }
 
+/* POST FLOW */
 function onFile(e){
   const f=e.target.files[0];if(!f)return;
-  selectedFile=f;
-  aiOk=false;document.getElementById('post-btn').disabled=true;
+  selectedFile=f;aiOk=false;document.getElementById('post-btn').disabled=true;
   const r=new FileReader();
   r.onload=ev=>{
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;">タップして変更</p>';
+    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><img src="'+ev.target.result+'" style="width:100%;border-radius:14px;display:block;"><p style="font-size:11px;color:#bbb;padding:8px 0;font-family:\'Noto Sans JP\',sans-serif;">タップして変更</p>';
     area.style.minHeight='auto';area.style.border='1px solid #eee';
     area.onclick=()=>document.getElementById('f-file').click();
     startAI();
   };
   r.readAsDataURL(f);
 }
-
 function startAI(){
   document.getElementById('ai-bar').style.display='flex';
   setAI('checking','解析中...','確認中');
@@ -429,13 +623,11 @@ function startAI(){
     else{setAI('unsafe','不適切なコンテンツの可能性があります','要確認');}
   },1600);
 }
-
 function setAI(s,msg,tag){
   document.getElementById('ai-dot').className='ai-dot '+s;
   document.getElementById('ai-msg').textContent=msg;
   const t=document.getElementById('ai-tag');t.className='ai-tag '+s;t.textContent=tag;
 }
-
 async function doPost(){
   if(!selectedFile||!aiOk)return;
   const btn=document.getElementById('post-btn');
@@ -445,25 +637,23 @@ async function doPost(){
     const nickname=document.getElementById('f-name').value.trim()||'匿名';
     const comment=document.getElementById('f-comment').value.trim();
     await api('posts',{method:'POST',body:JSON.stringify({nickname,comment,image_url,approved:false})});
-    showToast('post','yellow','投稿しました！管理者の承認をお待ちください。');
+    showToast('投稿しました！承認をお待ちください');
     document.getElementById('f-name').value='';
     document.getElementById('f-comment').value='';
     const area=document.getElementById('up-area');
-    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;">写真を選ぶ / カメラで撮影</p>';
+    area.innerHTML='<input type="file" id="f-file" accept="image/*" onchange="onFile(event)"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#ccc;fill:none;stroke-width:1.5"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg><p style="font-size:13px;color:#bbb;font-family:\'Noto Sans JP\',sans-serif;">写真を選ぶ / カメラで撮影</p>';
     area.style.minHeight='160px';area.style.border='1.5px dashed #ddd';
     area.onclick=()=>document.getElementById('f-file').click();
     document.getElementById('ai-bar').style.display='none';
     selectedFile=null;aiOk=false;
-  }catch(e){showToast('post','red','エラー: '+e.message);}
+  }catch(e){showToast('エラー: '+e.message);}
   finally{btn.disabled=false;btn.textContent='投稿する';}
 }
 
-function showToast(sec,color,msg){
-  const w=document.getElementById(sec+'-toast-wrap');
-  w.style.display='block';
-  const c=color==='green'?'#1D9E75':color==='red'?'#E24B4A':'#EF9F27';
-  w.innerHTML='<div class="toast"><div class="t-dot" style="background:'+c+'"></div>'+msg+'</div>';
-  setTimeout(()=>w.style.display='none',3000);
+function showToast(msg){
+  const t=document.getElementById('toast-bar');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 
 loadGallery();
