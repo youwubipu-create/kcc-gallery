@@ -130,17 +130,17 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 
 /* ===== FAB ===== */
 .fab{
-  position:fixed;bottom:36px;right:20px;
-  width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+  position:fixed;bottom:48px;right:24px;
+  width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(0,0,0,.18);
-  transition:transform .2s ease,background .2s ease;z-index:200;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
+  transition:transform .2s ease,background .2s ease;z-index:400;
 }
 .fab:active{transform:scale(.92);}
 .fab-post{background:#111;}
-.fab-post svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;}
-.fab-gallery{background:#fff;}
-.fab-gallery svg{width:22px;height:22px;stroke:#111;fill:none;stroke-width:2;}
+.fab-post svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;}
+.fab-gallery{background:#fff;border:1.5px solid #ddd;}
+.fab-gallery svg{width:26px;height:26px;stroke:#111;fill:none;stroke-width:2;}
 
 /* ===== POST SCREEN ===== */
 .post-screen{
@@ -169,6 +169,23 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .post-screen .post-btn{
   background:rgba(17,17,17,0.9);
 }
+
+@keyframes popUp{
+  0%{opacity:0;transform:translateY(40px) scale(0.92);}
+  60%{transform:translateY(-4px) scale(1.01);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+.post-item{
+  opacity:0;
+  animation:popUp .45s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.post-item:nth-child(1){animation-delay:.05s;}
+.post-item:nth-child(2){animation-delay:.12s;}
+.post-item:nth-child(3){animation-delay:.19s;}
+.post-item:nth-child(4){animation-delay:.26s;}
+.post-item:nth-child(5){animation-delay:.33s;}
+.post-item:nth-child(6){animation-delay:.40s;}
+.post-item:nth-child(7){animation-delay:.47s;}
 .post-header{
   display:flex;align-items:center;
   padding:56px 16px 16px;background:#fff;
@@ -343,22 +360,26 @@ input[type=file]{display:none;}
     </button>
     <div class="post-title">写真を投稿する</div>
   </div>
-  <div class="post-body">
-    <div class="upload-area" id="up-area" onclick="document.getElementById('f-file').click()">
+  <div class="post-body" id="post-body">
+    <div class="upload-area post-item" id="up-area" onclick="document.getElementById('f-file').click()">
       <input type="file" id="f-file" accept="image/*" onchange="onFile(event)">
       <svg viewBox="0 0 24 24"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39,18.39A5,5,0,0,0,18,9h-1.26A8,8,0,1,0,3,16.3"/></svg>
       <p>写真を選ぶ / カメラで撮影</p>
     </div>
-    <div id="ai-bar" style="display:none;" class="ai-bar">
+    <div id="ai-bar" style="display:none;" class="ai-bar post-item">
       <div class="ai-dot checking" id="ai-dot"></div>
       <div class="ai-info"><p>AI安全チェック</p><span id="ai-msg">解析中...</span></div>
       <span class="ai-tag checking" id="ai-tag">確認中</span>
     </div>
-    <div class="f-label">ニックネーム</div>
-    <input class="f-input" id="f-name" placeholder="例：田中 花子" type="text">
-    <div class="f-label">コメント</div>
-    <textarea class="f-textarea" id="f-comment" placeholder="写真についてひとこと..."></textarea>
-    <div style="background:#f7f7f7;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1px solid #eee;">
+    <div class="post-item">
+      <div class="f-label">ニックネーム</div>
+      <input class="f-input" id="f-name" placeholder="例：田中 花子" type="text">
+    </div>
+    <div class="post-item">
+      <div class="f-label">コメント</div>
+      <textarea class="f-textarea" id="f-comment" placeholder="写真についてひとこと..."></textarea>
+    </div>
+    <div class="post-item" style="background:rgba(247,247,247,0.88);border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1px solid #eee;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
       <div style="font-size:12px;font-weight:500;color:#555;margin-bottom:8px;">利用規約</div>
       <div style="font-size:11px;color:#888;line-height:1.7;margin-bottom:10px;">
         ・投稿した写真はギャラリーへの掲載に同意したものとみなします<br>
@@ -372,7 +393,7 @@ input[type=file]{display:none;}
         上記の利用規約に同意して投稿する
       </label>
     </div>
-    <button class="post-btn" id="post-btn" disabled onclick="doPost()">投稿する</button>
+    <button class="post-btn post-item" id="post-btn" disabled onclick="doPost()">投稿する</button>
   </div>
 </div>
 
@@ -535,8 +556,15 @@ function openPost(){
   document.getElementById('post-screen').classList.add('open');
   const fab=document.getElementById('fab-main');
   fab.className='fab fab-gallery';
-  fab.innerHTML='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+  fab.innerHTML='<svg viewBox="0 0 24 24"><polyline points="9,14 4,9 9,4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>';
   fab.onclick=closePost;
+  const items=document.querySelectorAll('#post-body .post-item');
+  items.forEach(el=>{
+    el.style.animation='none';
+    el.style.opacity='0';
+    void el.offsetWidth;
+    el.style.animation='';
+  });
 }
 function closePost(){
   document.getElementById('post-screen').classList.remove('open');
