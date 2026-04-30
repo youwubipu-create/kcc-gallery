@@ -146,12 +146,29 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .post-screen{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:480px;height:100%;
-  background:rgba(247,247,247,0.82);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  background:transparent;
   z-index:300;display:none;overflow-y:auto;
 }
 .post-screen.open{display:block;}
+.post-screen .post-header{
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.post-screen .post-body{
+  background:transparent;
+}
+.post-screen .f-input,
+.post-screen .f-textarea,
+.post-screen .upload-area,
+.post-screen .ai-bar{
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.post-screen .post-btn{
+  background:rgba(17,17,17,0.9);
+}
 .post-header{
   display:flex;align-items:center;
   padding:56px 16px 16px;background:#fff;
