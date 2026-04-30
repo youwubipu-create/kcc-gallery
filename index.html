@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v22</title>
+<title>KCC GALLERY - 三田祭2026 v23</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -46,13 +46,23 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 
 /* ===== GALLERY ===== */
 .content{padding-top:140px;padding-bottom:100px;}
+
+/* マソンリー風グリッド：各列独立で上詰め */
 .grid-wrap{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
+  display:flex;
+  flex-wrap:nowrap;
   gap:6px;
   padding:6px;
-  align-items:start;  /* 上詰め */
+  align-items:flex-start;
 }
+.grid-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+}
+
 .m-card-outer{cursor:pointer;position:relative;}
 .m-card{
   border-radius:12px;overflow:hidden;
@@ -79,21 +89,18 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 
 /* 列切替アニメーション */
 @keyframes tileIn{
-  0%{opacity:0;transform:scale(0.9);}
+  0%{opacity:0;transform:scale(0.88);}
   100%{opacity:1;transform:scale(1);}
 }
-.grid-wrap.animating .m-card-outer{
-  animation:tileIn .3s cubic-bezier(.34,1.4,.64,1) both;
+.animating .m-card-outer{
+  animation:tileIn .35s cubic-bezier(.34,1.4,.64,1) both;
 }
-.grid-wrap.animating .m-card-outer:nth-child(1){animation-delay:.00s;}
-.grid-wrap.animating .m-card-outer:nth-child(2){animation-delay:.03s;}
-.grid-wrap.animating .m-card-outer:nth-child(3){animation-delay:.06s;}
-.grid-wrap.animating .m-card-outer:nth-child(4){animation-delay:.09s;}
-.grid-wrap.animating .m-card-outer:nth-child(5){animation-delay:.12s;}
-.grid-wrap.animating .m-card-outer:nth-child(6){animation-delay:.15s;}
-.grid-wrap.animating .m-card-outer:nth-child(7){animation-delay:.18s;}
-.grid-wrap.animating .m-card-outer:nth-child(8){animation-delay:.21s;}
-.grid-wrap.animating .m-card-outer:nth-child(n+9){animation-delay:.24s;}
+.animating .m-card-outer:nth-child(1){animation-delay:.00s;}
+.animating .m-card-outer:nth-child(2){animation-delay:.04s;}
+.animating .m-card-outer:nth-child(3){animation-delay:.08s;}
+.animating .m-card-outer:nth-child(4){animation-delay:.12s;}
+.animating .m-card-outer:nth-child(5){animation-delay:.16s;}
+.animating .m-card-outer:nth-child(n+6){animation-delay:.20s;}
 
 .empty{text-align:center;padding:60px 20px;color:#ccc;font-size:13px;}
 .loading{text-align:center;padding:60px 20px;color:#ddd;font-size:13px;}
@@ -167,11 +174,11 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 }
 
 /* post-item アニメーション */
-@keyframes popUp{0%{opacity:0;transform:translateY(40px) scale(0.92);}60%{transform:translateY(-4px) scale(1.01);}100%{opacity:1;transform:translateY(0) scale(1);}}
-@keyframes popDown{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(40px) scale(0.92);}}
+@keyframes popUp{0%{opacity:0;transform:translateY(32px) scale(0.94);}70%{transform:translateY(-3px) scale(1.01);}100%{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes popDown{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(32px) scale(0.94);}}
 .post-item{opacity:0;}
-.post-item.anim-in{animation:popUp .45s cubic-bezier(.34,1.56,.64,1) forwards;}
-.post-item.anim-out{animation:popDown .3s cubic-bezier(.4,0,.6,1) forwards;}
+.post-item.anim-in{animation:popUp .4s cubic-bezier(.34,1.4,.64,1) forwards;}
+.post-item.anim-out{animation:popDown .25s ease-in forwards;}
 .post-item:nth-child(1){animation-delay:.05s;}
 .post-item:nth-child(2){animation-delay:.12s;}
 .post-item:nth-child(3){animation-delay:.19s;}
@@ -438,16 +445,7 @@ function cycleCols(){
   setCols(cols,true);
 }
 function setCols(n,animate=false){
-  const grid=document.getElementById('gallery-grid');
-  if(!grid)return;
-  grid.style.gridTemplateColumns=`repeat(${n},1fr)`;
-  if(animate){
-    grid.classList.remove('animating');
-    void grid.offsetWidth;
-    grid.classList.add('animating');
-    setTimeout(()=>grid.classList.remove('animating'),500);
-  }
-  updateColClasses(n);
+  renderCards(allPosts,animate);
   document.getElementById('cols-icon').innerHTML=colIcons[n]||colIcons[2];
   document.getElementById('cols-label').textContent=n+'列';
 }
@@ -531,24 +529,29 @@ async function loadMore(){
   await loadGallery(false);
   btn.textContent='もっと見る';
 }
-function renderCards(list){
+function renderCards(list,animate=false){
   document.getElementById('gallery-loading').style.display='none';
   const grid=document.getElementById('gallery-grid');
   const empty=document.getElementById('gallery-empty');
   if(!list.length){grid.style.display='none';empty.style.display='block';empty.textContent='承認済みの写真がまだありません';return;}
   empty.style.display='none';
-  grid.style.display='grid';
-  grid.style.gridTemplateColumns=`repeat(${cols},1fr)`;
-  grid.innerHTML=list.map((p,i)=>{
-    const pos=i%cols;
-    const colClass=cols===1?'col-mid':pos===0?'col-left':pos===cols-1?'col-right':'col-mid';
-    return `<div class="m-card-outer ${colClass}" onclick="handleCardTap(this,event)">
-      <div class="m-card"><img src="${p.image_url}" loading="lazy" decoding="async"></div>
-      <div class="card-caption">
-        <div class="card-name">${p.nickname||'匿名'}</div>
-        ${p.comment?'<div class="card-comment">'+p.comment+'</div>':''}
-      </div>
-    </div>`;
+  grid.style.display='flex';
+
+  // cols列分の配列を作る
+  const columns=Array.from({length:cols},()=>[]);
+  list.forEach((p,i)=>columns[i%cols].push(p));
+
+  grid.innerHTML=columns.map((col,ci)=>{
+    const colClass=cols===1?'col-mid':ci===0?'col-left':ci===cols-1?'col-right':'col-mid';
+    const items=col.map(p=>`
+      <div class="m-card-outer ${colClass}" onclick="handleCardTap(this,event)">
+        <div class="m-card"><img src="${p.image_url}" loading="lazy" decoding="async"></div>
+        <div class="card-caption">
+          <div class="card-name">${p.nickname||'匿名'}</div>
+          ${p.comment?'<div class="card-comment">'+p.comment+'</div>':''}
+        </div>
+      </div>`).join('');
+    return `<div class="grid-col${animate?' animating':''}">${items}</div>`;
   }).join('');
 }
 
@@ -606,25 +609,28 @@ function openPost(){
 function closePost(){
   const items=Array.from(document.querySelectorAll('#post-body .post-item')).reverse();
   items.forEach((el,i)=>{
-    el.style.transition='none';
-    el.style.animationDelay=i*0.06+'s';
+    // まず現在のopacityを保持したままanim-inを外す
+    const computed=window.getComputedStyle(el).opacity;
+    el.style.opacity=computed;
     el.classList.remove('anim-in');
+    void el.offsetWidth;
+    el.style.animationDelay=i*0.05+'s';
     el.classList.add('anim-out');
   });
+  const maxDelay=(items.length-1)*0.05+0.25+0.05;
   setTimeout(()=>{
     document.getElementById('post-screen').classList.remove('open');
     items.forEach(el=>{
       el.classList.remove('anim-out');
       el.style.animationDelay='';
       el.style.opacity='0';
-      el.style.transition='';
     });
     const fab=document.getElementById('fab-main');
     fab.className='fab fab-post';
     fab.innerHTML='<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
     fab.onclick=openPost;
     showColsBtn(true);
-  },350);
+  },maxDelay*1000);
 }
 
 /* ===== ADMIN ===== */
