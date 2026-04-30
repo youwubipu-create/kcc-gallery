@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v17</title>
+<title>KCC GALLERY - 三田祭2026 v18</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -548,10 +548,12 @@ document.addEventListener('touchmove',e=>{
   );
   const ratio=dist/pinchStartDist;
   let newCols=pinchStartCols;
-  if(ratio<0.75) newCols=Math.min(4,pinchStartCols+1);
-  else if(ratio>1.33) newCols=Math.max(2,pinchStartCols-1);
+  if(ratio<0.88) newCols=Math.min(4,pinchStartCols+1);
+  else if(ratio>1.14) newCols=Math.max(2,pinchStartCols-1);
   if(newCols!==cols){
     cols=newCols;
+    pinchStartCols=newCols;
+    pinchStartDist=dist;
     setCols(cols);
   }
 },{passive:true});
