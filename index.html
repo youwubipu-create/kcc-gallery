@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v27</title>
+<title>KCC GALLERY - 三田祭2026 v28</title>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -430,7 +430,42 @@ function cycleCols(){
   setCols(cols,true);
 }
 function setCols(n,animate=false){
-  renderCards(allPosts,animate);
+  const grid=document.getElementById('gallery-grid');
+  if(!grid||!allPosts.length)return;
+
+  // 既存の全カードをフラットに取得
+  const cards=Array.from(grid.querySelectorAll('.m-card-outer'));
+
+  // カラム構造を作り直す（カードは再利用）
+  const columns=Array.from({length:n},()=>[]);
+  cards.forEach((card,i)=>{
+    columns[i%n].push(card);
+    // col-left/right/mid を更新
+    card.classList.remove('col-left','col-right','col-mid');
+    const pos=i%n;
+    if(n===1)card.classList.add('col-mid');
+    else if(pos===0)card.classList.add('col-left');
+    else if(pos===n-1)card.classList.add('col-right');
+    else card.classList.add('col-mid');
+  });
+
+  // 新しいカラムDIVを生成してカードを移動
+  const newCols=columns.map((col,ci)=>{
+    const div=document.createElement('div');
+    div.className='grid-col'+(animate?' animating':'');
+    col.forEach(card=>div.appendChild(card));
+    return div;
+  });
+
+  grid.innerHTML='';
+  newCols.forEach(col=>grid.appendChild(col));
+
+  if(animate){
+    setTimeout(()=>{
+      grid.querySelectorAll('.grid-col').forEach(c=>c.classList.remove('animating'));
+    },600);
+  }
+
   document.getElementById('cols-icon').innerHTML=colIcons[n]||colIcons[2];
   document.getElementById('cols-label').textContent=n+'列';
 }
