@@ -115,8 +115,9 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
   columns:2;
   gap:6px;
 }
-.masonry-wrap.cols-1{columns:1;}
+.masonry-wrap.cols-2{columns:2;}
 .masonry-wrap.cols-3{columns:3;}
+.masonry-wrap.cols-4{columns:4;}
 
 .m-card-outer{
   break-inside:avoid;
@@ -142,8 +143,13 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
   border-radius:18px;
   z-index:50;
 }
+/* 左列：右方向に拡大 */
+.m-card-outer.col-left .m-card{transform-origin:left top;}
+/* 右列：左方向に拡大 */
+.m-card-outer.col-right .m-card{transform-origin:right top;}
+/* 中央列：中央から拡大 */
+.m-card-outer.col-mid .m-card{transform-origin:center top;}
 
-/* キャプション：カードの外・下に出現 */
 .card-caption{
   margin-top:6px;
   background:rgba(255,255,255,0.96);
@@ -167,7 +173,6 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
 .card-name{font-size:13px;font-weight:500;color:#111;}
 .card-comment{font-size:12px;color:#777;margin-top:3px;line-height:1.5;}
 
-/* オーバーレイ */
 #card-overlay{
   position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0);
@@ -519,17 +524,30 @@ document.addEventListener('touchmove',e=>{
     const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
     const ratio=dist/pinchStartDist;
     let newCols=pinchStartCols;
-    if(ratio<0.75) newCols=Math.min(3,pinchStartCols+1);
-    else if(ratio>1.35) newCols=Math.max(1,pinchStartCols-1);
+    if(ratio<0.78) newCols=Math.min(4,pinchStartCols+1);
+    else if(ratio>1.3) newCols=Math.max(2,pinchStartCols-1);
     if(newCols!==cols){
       cols=newCols;
       const grid=document.getElementById('gallery-grid');
-      grid.className='masonry-wrap'+(cols===1?' cols-1':cols===3?' cols-3':'');
+      grid.className='masonry-wrap cols-'+cols;
+      updateColClasses();
     }
   }
 },{passive:true});
 
 /* ===== CARD EXPAND ===== */
+/* カード列位置クラスを更新 */
+function updateColClasses(){
+  const outers=document.querySelectorAll('.m-card-outer');
+  outers.forEach((el,i)=>{
+    const pos=i%cols;
+    el.classList.remove('col-left','col-right','col-mid');
+    if(pos===0) el.classList.add('col-left');
+    else if(pos===cols-1) el.classList.add('col-right');
+    else el.classList.add('col-mid');
+  });
+}
+
 function expandCard(outer){
   if(expandedCard && expandedCard!==outer) collapseCard();
   outer.classList.add('expanded');
@@ -613,9 +631,12 @@ function renderCards(list){
   }
   empty.style.display='none';
   grid.style.display='block';
-  grid.className='masonry-wrap'+(cols===1?' cols-1':cols===3?' cols-3':'');
-  grid.innerHTML=list.map(p=>`
-    <div class="m-card-outer" onclick="handleCardTap(this,event)">
+  grid.className='masonry-wrap cols-'+cols;
+  grid.innerHTML=list.map((p,i)=>{
+    const pos=i%cols;
+    const colClass=pos===0?'col-left':pos===cols-1?'col-right':'col-mid';
+    return `
+    <div class="m-card-outer ${colClass}" onclick="handleCardTap(this,event)">
       <div class="m-card">
         <img src="${p.image_url}" loading="lazy">
       </div>
@@ -623,8 +644,8 @@ function renderCards(list){
         <div class="card-name">${p.nickname||'匿名'}</div>
         ${p.comment?'<div class="card-comment">'+p.comment+'</div>':''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 /* ===== SEARCH ===== */
