@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>KCC GALLERY - 三田祭2026 v28</title>
-<link href="https://fonts.googleapis.com/css2?family=Modak&family=Dancing+Script:wght@700&family=Caveat:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<title>KCC GALLERY v29</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--gold:#C9922A;--black:#111;--border:#efefef;}
-body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+body{background:#fff;font-family:'Inter','Noto Sans JP',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
 
 /* ===== SPLASH ===== */
 #splash{
@@ -16,20 +16,20 @@ body{background:#fff;font-family:'Noto Sans JP',sans-serif;max-width:480px;margi
   background:#fff;z-index:9999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
 }
-#splash-logo{font-family:'Modak',cursive;font-size:56px;color:#111;letter-spacing:4px;display:flex;gap:2px;}
+#splash-logo{font-family:'Inter',sans-serif;font-size:48px;font-weight:900;color:#111;letter-spacing:2px;display:flex;gap:2px;}
 #splash-logo span{display:inline-block;opacity:0;transform:translateY(-40px) scale(1.4);transition:none;}
 #splash-logo span.typed{opacity:1;transform:translateY(0) scale(1);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),opacity 0.2s ease;}
-#splash-sub{font-family:'Caveat',cursive;font-size:15px;color:#aaa;letter-spacing:.15em;opacity:0;transition:opacity 0.4s ease;}
+#splash-sub{font-family:'Inter',sans-serif;font-size:13px;color:#aaa;letter-spacing:.15em;opacity:0;transition:opacity 0.4s ease;font-weight:400;}
 #splash-sub.show{opacity:1;}
 
 /* ===== HEADER ===== */
 .header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:200;}
 .title-area{padding:52px 20px 8px;position:relative;}
 .title-row{display:flex;align-items:flex-start;position:relative;line-height:1;}
-.title-kcc{font-family:'Modak',cursive;font-size:42px;color:#111;letter-spacing:-1px;line-height:1;text-shadow:0 2px 12px rgba(255,255,255,0.9);}
-.title-100th{font-family:'Dancing Script',cursive;font-size:38px;color:var(--gold);opacity:0.72;position:absolute;right:16px;top:-8px;transform:rotate(-3deg);text-shadow:0 2px 8px rgba(255,255,255,0.7);}
-.title-sub{font-family:'Caveat',cursive;font-size:15px;color:#444;letter-spacing:.12em;margin-top:4px;text-shadow:0 1px 6px rgba(255,255,255,0.9);}
-.title-festap{font-family:'Modak',cursive;font-size:11px;color:#ccc;letter-spacing:.25em;margin-top:3px;padding-left:2px;}
+.title-kcc{font-family:'Inter',sans-serif;font-size:38px;font-weight:900;color:#111;letter-spacing:-1.5px;line-height:1;text-shadow:0 2px 12px rgba(255,255,255,0.9);}
+.title-100th{display:none;}
+.title-sub{display:none;}
+.title-festap{font-family:'Inter',sans-serif;font-size:10px;color:#ccc;letter-spacing:.3em;margin-top:4px;padding-left:2px;font-weight:500;}
 .admin-secret-btn{position:absolute;right:16px;top:-8px;width:28px;height:44px;background:transparent;border:none;cursor:pointer;z-index:10;}
 .header-controls{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px;}
 .photo-count{font-size:11px;color:#555;letter-spacing:.08em;text-shadow:0 1px 4px rgba(255,255,255,0.8);}
@@ -238,11 +238,9 @@ input[type=file]{display:none;}
   <div class="title-area">
     <div class="title-row">
       <div class="title-kcc">KCC GALLERY</div>
-      <div class="title-100th">100th</div>
+      <button class="admin-secret-btn" onclick="openAdmin()"></button>
     </div>
-    <div class="title-sub">KEIO MITA FES × KCC 100th</div>
     <div class="title-festap">FESTAP</div>
-    <button class="admin-secret-btn" onclick="openAdmin()"></button>
   </div>
   <div class="header-controls">
     <div class="photo-count"><span id="count-num">0</span>枚の写真</div>
